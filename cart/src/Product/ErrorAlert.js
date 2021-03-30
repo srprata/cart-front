@@ -4,14 +4,12 @@ import { Alert, Button } from 'react-bootstrap'
 export default function ErrorAlert({ showAlert, setShowAlert, msg }) {
     return (
         <React.Fragment>
-            <Alert show={showAlert} variant="success">
+            <Alert show={showAlert} variant="danger">
                 <Alert.Heading>Ops</Alert.Heading>
-                    <p>
-                        {msg}
-                    </p>
+                    <p>{msg}</p>
                     <hr />
                     <div className="d-flex justify-content-end">
-                    <Button onClick={() => setShowAlert(false)} variant="outline-success">
+                    <Button onClick={() => setShowAlert(false)} variant="outline-danger">
                         Fechar...Buahhh
                     </Button>
                 </div>

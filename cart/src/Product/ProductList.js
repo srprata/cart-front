@@ -24,7 +24,7 @@ export default function ProductList({cart, setCart}) {
             <Row>
             {
                 data.getProducts.map(product => (
-                    <Product key={product.productId} product={product} setCart={setCart} cart={cart}/>
+                    <Product key={product.productId} product={product}/>
                 ))
             }
             </Row>
