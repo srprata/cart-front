@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter } from "react-router-dom";
 //Components
 import Routes from './routes';
+
 //Graphql
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 

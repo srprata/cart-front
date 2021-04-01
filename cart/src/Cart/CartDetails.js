@@ -1,18 +1,35 @@
-import React from 'react'
-import { Modal, Button, Form, Col, InputGroup } from 'react-bootstrap'
-import { Plus, Dash } from 'react-bootstrap-icons'
+import React, { useState } from 'react'
+import { Navbar, Row, Form, Container, Col, InputGroup, Button } from 'react-bootstrap'
+//Icons
+import { Plus, Dash, Trash } from 'react-bootstrap-icons';
 //Redux
 import { useDispatch, useSelector } from 'react-redux'
-//Navegacao
+//Navigation
 import { useHistory } from 'react-router-dom';
+//Components
+import ErrorAlert from '../product/ErrorAlert';
+//Generic
+import { onlyNumbers } from '../generic/functions';
+//Css
+import './cartDetails.css';
 
-export default function CartDetails({show, close }) {
+export default function CartDetails({ show, close }) {
 
-    const cart = useSelector(state => state)
+    const cart = useSelector(state => state);
 
-    const dispatch = useDispatch()
+    const cartItems = cart.items;
 
-    const history = useHistory()
+    const dispatch = useDispatch();
+
+    const history = useHistory();
+
+    const[showAlert, setShowAlert] = useState(false);
+    const[msg, setMsg] = useState();
+    let totalPrice = 0;
+
+    cartItems.forEach(element => {
+        totalPrice += element.qty * element.price;
+    });
 
     //verify product stock
     const isProductOnStock = (val) => {
@@ -31,7 +48,7 @@ export default function CartDetails({show, close }) {
                 totalPrice: cart.price * value
             })
         }else{
-            alert(`Estoque insuficiente (estoque atual: ${cart.stock})`)
+            showStockError(`Estoque insuficiente (estoque atual: ${cart.stock})`)
         }
     }
     
@@ -44,8 +61,9 @@ export default function CartDetails({show, close }) {
                 qty: 1,
                 price: cart.price
             })
+        }else{
+            showStockError('Quantidade não pode ser 0')
         }
-        alert(`Quantidade informada não pode ser inferior a 1`)
     }
 
     //increment qty of itens
@@ -56,77 +74,85 @@ export default function CartDetails({show, close }) {
                 qty: 1,
                 price: cart.price
             })
-            // setProductQty(cart.qty)
-        }
-    }
-
-    const onlyNumbers = (val) => {
-        if ((/^\d+$/.test(val) && val !== '0') || val === '') {
-            return true
         }else{
-            return false
+            showStockError(`Estoque insuficiente (estoque atual: ${cart.stock})`)
         }
     }
 
+    //redirect to checkout page
     const finalizar = () => {
         history.push(`/order`);
     }
 
+    //show modal msg error
+    const showStockError = (msg) => {
+        setMsg(msg);
+        setShowAlert(true);
+    }
+
+    const emptyCart = () => {
+        dispatch({
+            type: 'CLEAR_CART'
+        })
+    }
+// console.log(cartItems)
     return (
         <React.Fragment>
-            {cart.productId !== null ? (
-                <Modal show={show} onHide={close}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Resumo da compra</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form>
-                            <Form.Group controlId="img">
-                                <Form.Label column align="center"><img src={`/images/img${cart.productId}.png`} alt={cart.title}/></Form.Label>
-                            </Form.Group>
-                            <Form.Group controlId="title">
-                                <Form.Label column>
-                                    Produto: {cart.title}
-                                </Form.Label>
-                            </Form.Group>
-                            <Form.Row>
-                                <Form.Group as={Col}>
-                                    <InputGroup className="mb-3">
-                                        <Form.Label column  sm={3}>Quantidade:</Form.Label>
-                                        <InputGroup.Prepend>
-                                            <Button variant="outline-secondary" onClick={e => decrement()}><Dash /></Button>
-                                        </InputGroup.Prepend>
-                                        <Form.Control
-                                            type="text"
-                                            id="qtyItens"
-                                            value={cart.qty}
-                                            placeholder="Insira a quantidade"
-                                            onChange={e => onlyNumbers(e.target.value) ? changeQty(e.target.value) : cart.qty}
-                                            maxLength={2}
-                                        />
-                                        <InputGroup.Append>
-                                            <Button variant="outline-secondary" onClick={e => increment()}><Plus /></Button>
-                                        </InputGroup.Append>
-                                    </InputGroup>
-                                </Form.Group>
-                            </Form.Row>
-                            <Form.Group controlId="price">
-                            <Form.Label column>
-                                    Valor da compra: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cart.totalPrice !== null && cart.totalPrice !== undefined ? cart.totalPrice.toFixed(2) :null)}
+
+            <Navbar className="justify-content mb-3 topo">
+                <Navbar.Brand><b>Tosquidão E-commerce</b></Navbar.Brand>
+            </Navbar>
+
+            <Container>
+
+                {cartItems.map(item => (
+                    <Form key={item.productId}>
+                        <Form.Group className="row align-items-center">
+                            <Form.Label as={Col} md={2}>
+                                <img src={`/images/img${item.productId}.png`} alt={item.title} className="thumb"/>
                             </Form.Label>
-                            </Form.Group>
-                        </Form>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={close}>
-                            Fechar
-                        </Button>
-                        <Button variant="success" onClick={finalizar}>
+                            <Form.Label as={Col} md={5}>
+                                {item.description===null?' - ': item.description}
+                            </Form.Label>
+                            <Form.Label as={Col} md={2}>
+                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+                                    item.price===null?' - ': (item.price * item.qty).toFixed(2)
+                                )}
+                            </Form.Label>
+                            <InputGroup as={Col} md={3}>
+                                <InputGroup.Prepend>
+                                    <Button variant="light" onClick={e => decrement()}><Dash /></Button>
+                                </InputGroup.Prepend>
+                                <Form.Control
+                                    type="text"
+                                    id="qtyItens"
+                                    value={item.qty}
+                                    placeholder="Insira a quantidade"
+                                    onChange={e => onlyNumbers(e.target.value) ? changeQty(e.target.value) : cart.qty}
+                                    maxLength={2}
+                                />
+                                <InputGroup.Append>
+                                    <Button variant="light" onClick={e => increment()} title="Adicionar mais"><Plus /></Button>
+                                </InputGroup.Append>
+                                <Col md={1}/>
+                                <Button variant="light" onClick={e => increment()} title="Remover item"><Trash /></Button>
+                            </InputGroup>
+                        </Form.Group>
+                        <hr/>
+                    </Form>
+                ))}
+                <Row>
+                    <Col md={{ span: 2, offset: 7 }}>
+                        R$ {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPrice.toFixed(2))}
+                    </Col>
+                    <Col md={3}>
+                        <Button variant="success" onClick={finalizar} >
                             Finalizar Compra
                         </Button>
-                    </Modal.Footer>
-                </Modal>
-            ): null}
+                    </Col>
+                </Row>
+            </Container>
+            
             </React.Fragment>
     )
 }

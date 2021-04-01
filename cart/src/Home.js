@@ -1,61 +1,62 @@
 import React, { useState } from 'react'
 import { Container, Navbar, Badge } from 'react-bootstrap'
 //Bootstrap
-import { Basket } from 'react-bootstrap-icons'
+import { Cart4 } from 'react-bootstrap-icons'
 //Components
-import ProductList from './Product/ProductList'
-import CartDetails from './Cart/CartDetails'
+import ProductList from './product/ProductList'
+import CartDetails from './cart/CartDetails'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 //Css
 import './home.css'
+//Navigation
+import { useHistory } from 'react-router-dom';
 
 export default function Home() {
-    const cart = useSelector(state => state)
-    const dispatch = useDispatch();
     
-    // console.log(cart)
+    const state = useSelector(state => state);
+    const history = useHistory();
 
-    //modal status
-    const[showCart, setShowCart] =  useState(false)
+    let totalItens = 0;
+    let totalPrice = 0;
+    
+    const cartItems = state.items.slice();
+
+    //sum total items / price
+    cartItems.forEach(element => {
+        totalItens += element.qty;
+        totalPrice += element.qty * element.price;
+    });
 
     //show product details modal
-    const showCartDetails = () =>{
-        setShowCart(true)
-    }
-
-    //close modal with product details
-    const close = () => {
-        setShowCart(false)
-        initializeCart()
-    } 
-
-    const initializeCart = () => {
-        if(cart.qty === 0){
-            dispatch({
-                type: 'CLEAR_CART'
-            })
-        }
+    const goToCartDetails = () => {
+        if(totalItens !== 0){
+            history.push(`/cart`);  
+        } 
     }
 
     return (
-        <Container fluid className="tela">
+        <React.Fragment>
 
-            <Navbar className="bg-light justify-content mb-3">
-                <Navbar.Brand>Tosquidão E-commerce</Navbar.Brand>
-                <Basket onClick={e => showCartDetails()} size={20} className="cursor"/>
-                <Badge> {cart.qty > 0 ? cart.qty : null} </Badge>
-                {cart.qty > 0 ? (
+            <Navbar className="justify-content mb-3 topo">
+                <Navbar.Brand><b>Tosquidão E-commerce</b></Navbar.Brand>
+                <Cart4 onClick={e => goToCartDetails()} size={20} className="cursor"/>
+                <Badge> {totalItens > 0 ? totalItens : null} </Badge>
+                {totalItens > 0 ? (
                     <div>
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cart.totalPrice.toFixed(2))}
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPrice.toFixed(2))}
                     </div>
                 ):null}
             </Navbar>
 
-            <CartDetails show={showCart} close={close}/>
-            
-            <ProductList />
+            <Container fluid>
+                <ProductList />
+            </Container>
 
-        </Container>
+            {/* <Navbar fixed="bottom" className="justify-content-center mb-3 tela">
+                <b>Toquisdão E-commerce LTDA</b><CloudDrizzleFill/>
+            </Navbar> */}
+
+        </React.Fragment>
     )
 }

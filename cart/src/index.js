@@ -6,9 +6,18 @@ import App from './App';
 //Redux
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import rootReducer from './Store/store'
+import cartReducer from './reducers/cartReducer'
+// import storage from 'redux-persist/lib/storage';
 
-const store = createStore(rootReducer)
+// const persistConfig = {
+//   key: 'cart',
+//   storage
+// };
+
+const store = createStore(
+  cartReducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
 
 ReactDOM.render(
   // <React.StrictMode>

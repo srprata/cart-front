@@ -1,18 +1,19 @@
 import React, { useState } from 'react'
-import { Form, InputGroup, Button, Col } from 'react-bootstrap'
+import { Form, Button, Col, Container, Navbar } from 'react-bootstrap'
 //Redux
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 //Graphql
-import { useMutation } from "@apollo/client";
-import { SAVE_ORDER } from '../Queries/orderQueries'
+// import { useMutation } from "@apollo/client";
+// import { SAVE_ORDER } from '../queries/orderQueries'
+import { onlyNumbers } from '../generic/functions';
 
 export default function Order() {
 
     const [creditCard, setCreditCard] = useState()
     
-    const cart = useSelector(state => state)
+    // const cart = useSelector(state => state)
 
-    const [save_order] = useMutation(SAVE_ORDER);
+    // const [save_order] = useMutation(SAVE_ORDER);
 
     //validate creditcard
     const validateCreditCard = () => {
@@ -30,24 +31,31 @@ export default function Order() {
     }
 
     return (
-        <React.Fragment>
+        <Container fluid>
+            <Navbar className="bg-light justify-content mb-3">
+                <Navbar.Brand><b>Tosquidão E-commerce - Dados para pagamento</b></Navbar.Brand>
+            </Navbar>
             <Form>
-                <Form.Row>
-                    <Form.Group as={Col}>
-                        <InputGroup className="mb-3">
-                            <Form.Label column  sm={3}>Cartão:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                id="qtyItens"
-                                placeholder="Digite os 4 primeiros dígitos do cartão"
-                                onChange={e => setCreditCard(e.target.value)}
-                                maxLength={4}
-                            />
-                        </InputGroup>
+                <Form.Group>
+                    {/* <Form.Label><b>Cartão:</b></Form.Label> */}
+                    <Col md={4}>
+                    <Form.Control
+                        type="text"
+                        id="qtyItens"
+                        placeholder="Digite os 4 primeiros dígitos do cartão"
+                        value={creditCard}
+                        onChange={e => onlyNumbers(e.target.value) ? setCreditCard(e.target.value) : ''}
+                        maxLength={4}
+                    />
+                    </Col>
+                    {/* <Col md={9}></Col> */}
+                </Form.Group>
+                <Form.Group controlId="price">
+                    <Col>
                         <Button variant="success" onClick={e => validateCreditCard()}>Comprar</Button>
-                    </Form.Group>
-                </Form.Row>
+                    </Col>
+                </Form.Group>
             </Form>
-        </React.Fragment>
+        </Container>
     )
 }

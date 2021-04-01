@@ -1,19 +1,24 @@
 import React from 'react'
-import { Alert, Button } from 'react-bootstrap'
+import { Alert, Button, Modal } from 'react-bootstrap'
 
 export default function ErrorAlert({ showAlert, setShowAlert, msg }) {
     return (
         <React.Fragment>
-            <Alert show={showAlert} variant="danger">
-                <Alert.Heading>Ops</Alert.Heading>
-                    <p>{msg}</p>
-                    <hr />
-                    <div className="d-flex justify-content-end">
-                    <Button onClick={() => setShowAlert(false)} variant="outline-danger">
-                        Fechar...Buahhh
+            <Modal show={showAlert} onHide={setShowAlert}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Putz</Modal.Title>
+                </Modal.Header>
+                <Modal.Body align="center">
+                <Alert show={showAlert} variant="danger">
+                    <Alert.Heading>{msg}</Alert.Heading>
+                </Alert>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowAlert(false)}>
+                        Fechar
                     </Button>
-                </div>
-            </Alert>
+                </Modal.Footer>
+            </Modal>
         </React.Fragment>
     )
 }
