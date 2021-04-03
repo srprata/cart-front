@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Navbar, Row, Form, Container, Col, InputGroup, Button } from 'react-bootstrap'
+import { Row, Form, Container, Col, InputGroup, Button } from 'react-bootstrap'
 //Icons
 import { Plus, Dash, Trash } from 'react-bootstrap-icons';
 //Redux
@@ -7,7 +7,9 @@ import { useDispatch, useSelector } from 'react-redux'
 //Navigation
 import { useHistory } from 'react-router-dom';
 //Components
-import ErrorAlert from '../product/ErrorAlert';
+import Menu from '../Menu';
+import AlertMsg from '../product/AlertMsg';
+import { changeProductQty, incrementProductBy1, decrementProductBy1, removeFromCart } from '../actions/cartAction';
 //Generic
 import { onlyNumbers } from '../generic/functions';
 //Css
@@ -15,9 +17,7 @@ import './cartDetails.css';
 
 export default function CartDetails({ show, close }) {
 
-    const cart = useSelector(state => state);
-
-    const cartItems = cart.items;
+    const cartItems = useSelector(state => state.items);
 
     const dispatch = useDispatch();
 
@@ -25,58 +25,91 @@ export default function CartDetails({ show, close }) {
 
     const[showAlert, setShowAlert] = useState(false);
     const[msg, setMsg] = useState();
+
     let totalPrice = 0;
+
+    //test if cart is empty, if it is redirect to home page
+    if(cartItems.length === 0){
+        history.push('/');
+    }
 
     cartItems.forEach(element => {
         totalPrice += element.qty * element.price;
     });
 
-    //verify product stock
-    const isProductOnStock = (val) => {
-        return cart.stock - val  >= 0 ? true : false
-    }
+    const changeQty = (item, val) => {
 
-    //change qty manually
-    const changeQty = (val) => {
+        let valor = val === '' ? 1 : val;
 
-        let value = val === '' ? 1 : val
-
-        if(isProductOnStock(value)){
-            dispatch({
-                type: 'SET_QTY',
-                qty: value,
-                totalPrice: cart.price * value
-            })
-        }else{
-            showStockError(`Estoque insuficiente (estoque atual: ${cart.stock})`)
+        let items = changeProductQty(cartItems, item, valor);
+        
+        //items( 1-product out of stock, 2-qty = 0 )
+        switch(items){
+            case 1:
+                showAlertBox(`Não temos estoque suficiente para ${item.title} (atual: ${item.stock})`);
+                break;
+            case 2:
+                showAlertBox(`Zero(0) não pode amigão. Mas você pode remover do carrinho!'`);
+                break;
+            default:
+                dispatch({
+                    type: 'SET_QTY',
+                    data: { items }
+                });
+                break;
         }
-    }
-    
+
+    }    
+
     //decrement qty of itens
-    const decrement = () => {
-        //only decrement if theres itens on cart
-        if(cart.qty > 1){
-            dispatch({
-                type: 'REM_PRODUCT',
-                qty: 1,
-                price: cart.price
-            })
+    const decrement = item => {
+
+        let items = decrementProductBy1(cartItems, item);
+
+        //items = 1, error with qty, lower than 1
+        if(items === 1){
+            showAlertBox('Zero(0) não pode amigão. Mas você pode remover do carrinho!');
         }else{
-            showStockError('Quantidade não pode ser 0')
+            dispatch({
+                type: 'DECREMENT_PRODUCT',
+                data: { items }
+            })
         }
+
     }
 
     //increment qty of itens
-    const increment = () => {
-        if(isProductOnStock(cart.qty + 1)){
-            dispatch({
-                type: 'ADD_PRODUCT',
-                qty: 1,
-                price: cart.price
-            })
+    const increment = item => {
+
+        let items = incrementProductBy1(cartItems, item);
+
+        if(items === 1){
+            showAlertBox(`Infelizmente não temos mais estoque para ${item.title} (Estoque atual: ${item.stock})`);
         }else{
-            showStockError(`Estoque insuficiente (estoque atual: ${cart.stock})`)
+            dispatch({
+                type: 'INCREMENT_PRODUCT',
+                data: { items }
+            });
         }
+    }
+
+    const remove = item => {
+
+        let items = removeFromCart(cartItems, item);
+
+        if(item === 1){
+            showAlertBox(`O produto selecionado (${item.title}) para ser removido não foi encontrado no seu carrinho`);
+        }else{
+            dispatch({
+                type: 'REMOVE_FROM_CART',
+                data: { items }
+            });
+
+            if(cartItems.length > 0){
+                showAlertBox(`${item.title} removido do seu carrinho!`);
+            }
+        }
+
     }
 
     //redirect to checkout page
@@ -85,25 +118,19 @@ export default function CartDetails({ show, close }) {
     }
 
     //show modal msg error
-    const showStockError = (msg) => {
+    const showAlertBox = (msg) => {
         setMsg(msg);
         setShowAlert(true);
     }
 
-    const emptyCart = () => {
-        dispatch({
-            type: 'CLEAR_CART'
-        })
-    }
-// console.log(cartItems)
     return (
         <React.Fragment>
 
-            <Navbar className="justify-content mb-3 topo">
-                <Navbar.Brand><b>Tosquidão E-commerce</b></Navbar.Brand>
-            </Navbar>
+            <Menu info=' - Carrinho' />
 
-            <Container>
+            <Container fluid>
+
+                <AlertMsg showAlert={showAlert} setShowAlert={setShowAlert} msg={msg}></AlertMsg>
 
                 {cartItems.map(item => (
                     <Form key={item.productId}>
@@ -119,24 +146,23 @@ export default function CartDetails({ show, close }) {
                                     item.price===null?' - ': (item.price * item.qty).toFixed(2)
                                 )}
                             </Form.Label>
-                            <InputGroup as={Col} md={3}>
+                            <InputGroup as={Col} md={2}>
                                 <InputGroup.Prepend>
-                                    <Button variant="light" onClick={e => decrement()}><Dash /></Button>
+                                    <Button variant="light" onClick={e => decrement(item)}><Dash /></Button>
                                 </InputGroup.Prepend>
                                 <Form.Control
                                     type="text"
                                     id="qtyItens"
                                     value={item.qty}
-                                    placeholder="Insira a quantidade"
-                                    onChange={e => onlyNumbers(e.target.value) ? changeQty(e.target.value) : cart.qty}
+                                    onChange={e => onlyNumbers(e.target.value) ? changeQty(item, e.target.value) : item.qty}
                                     maxLength={2}
                                 />
                                 <InputGroup.Append>
-                                    <Button variant="light" onClick={e => increment()} title="Adicionar mais"><Plus /></Button>
+                                    <Button variant="light" onClick={e => increment(item)} title="Adicionar mais"><Plus /></Button>
                                 </InputGroup.Append>
-                                <Col md={1}/>
-                                <Button variant="light" onClick={e => increment()} title="Remover item"><Trash /></Button>
+                                <Col md={1}></Col>
                             </InputGroup>
+                                <Button variant="light" onClick={e => remove(item)} title="Remover item"><Trash /></Button>
                         </Form.Group>
                         <hr/>
                     </Form>

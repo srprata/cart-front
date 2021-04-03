@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import ErrorAlert from './ErrorAlert';
+import ErrorAlert from './AlertMsg';
 //Redux
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../actions/cartAction';
 import { actionsTypes } from '../types';
 
-export default function ProductDetails({ show, close, product}) {
+export default function ProductDetails({ show, close, product }) {
 
     const[showAlert, setShowAlert] = useState(false);
     const[msg, setMsg] = useState();
@@ -48,7 +48,7 @@ export default function ProductDetails({ show, close, product}) {
                                         <b>Descrição:</b> {product.description===null?' - ': product.description}
                                     </Form.Label>
                                     <Form.Label column>
-                                        <b>Valor: </b>{product.priceBRL===null?' - ': product.priceBRL}
+                                        <b>Valor: </b>{product.price===null?' - ': new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price.toFixed(2))}
                                     </Form.Label>
                                 </Form.Group>
                             </Form>

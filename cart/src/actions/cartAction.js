@@ -1,12 +1,9 @@
-// import { actionsTypes } from '../types';
-
 //add or increment product on cart
-export const addToCart = (state, product) => {
+export const addToCart = (items, product) => {
 
-    const cartItems = state.items.slice();
+    const cartItems = items.items.slice();
 
     let alreadyInCart = false;
-    // let outOfStock = false;:?
 
     cartItems.forEach(element => {
 
@@ -42,27 +39,72 @@ export const removeFromCart = (items, product) => {
 }
 
 // edit qty of products
-export const changeQty = (items, product, qty) => {
+export const changeProductQty = (items, product, qty) => {
+
+    const cartItems = items.slice();
+    
+    let error = 0;
+
+    cartItems.forEach(element => {
+
+        if(element.productId === product.productId){
+            
+            //verify product stock
+            if(product.stock - qty < 0){
+                error = 1;
+            }
+
+            //qty is bigger than 1
+            if(qty < 0){
+                error = 2
+            }
+
+            if(error === 0){
+                element.qty = qty;
+            }
+
+        }
+
+    });
+
+    return error === 0 ? cartItems : error;
 
 }
 
 //increment products by 1
-export const increment = (items, product) => {
+export const incrementProductBy1 = (items, product) => {
+
+    const cartItems = items.slice();
+    let error = 0;
+
+    cartItems.forEach(element => {
+
+        if(element.productId === product.productId){
+            //verify product stock
+            product.stock - element.qty + 1 > 0 ? element.qty++ : error = 1;
+        }
+
+    });
+
+    return  error ? error : cartItems;
 
 }
 
 //decrement products by 1
-export const decrement = (items, product) => {
-    
+export const decrementProductBy1 = (items, product) => {
+
+    const cartItems = items.slice();
+    let error = 0;
+
+    cartItems.forEach(element => {
+
+        if(element.productId === product.productId){
+            //verify if qty is bigger than 1
+            product.qty > 1 ? element.qty-- : error = 1;
+        }
+
+    });
+
+    return error ? error : cartItems;
+
 }
-// export const removeFromCart = (items, product) => (dispatch) => {
-
-//     const cartItems = items.slice().filter(
-//         element => element.productId !== product.productId
-//     );
-
-//     dispatch({
-//         type: actionsTypes.REMOVE_FROM_CART, data: { cartItems }
-//     })
-
-// }

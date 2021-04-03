@@ -7,13 +7,13 @@ import { useQuery } from "@apollo/client";
 //Components
 import Product from './Product';
 
-export default function ProductList({cart, setCart}) {
+export default function ProductList() {
     
     const { loading, error, data } = useQuery(GET_PRODUCTS);
 
     if(loading){
         return(
-            <Container>
+            <Container fluid>
                 <Row className="justify-content-md-center">
                     <Col md="auto">
                     <Alert key={1} variant="info">Carregando produtos....</Alert>
@@ -25,7 +25,7 @@ export default function ProductList({cart, setCart}) {
 
     if(error){
         return(
-            <Container>
+            <Container fluid>
                 <Row className="justify-content-md-center">
                     <Col md="auto">
                         <Alert key={1} variant="danger">Xiii...estamos com algum problema para retornar os produtos</Alert>
