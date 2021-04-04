@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 //Navigation
 import { useHistory } from 'react-router-dom';
 //Components
-import Menu from '../Menu';
+import Topo from '../Topo';
 import AlertMsg from '../product/AlertMsg';
 import { changeProductQty, incrementProductBy1, decrementProductBy1, removeFromCart } from '../actions/cartAction';
 //Generic
@@ -126,7 +126,7 @@ export default function CartDetails({ show, close }) {
     return (
         <React.Fragment>
 
-            <Menu info=' - Carrinho' />
+            <Topo info=' - Carrinho' />
 
             <Container fluid>
 
@@ -134,19 +134,19 @@ export default function CartDetails({ show, close }) {
 
                 {cartItems.map(item => (
                     <Form key={item.productId}>
-                        <Form.Group className="row align-items-center">
-                            <Form.Label as={Col} md={2}>
+                        <Form.Group className="row align-items-center mb-2">
+                            <Form.Label as={Col} xs={4} md={4} lg={2} className="mb-2">
                                 <img src={`/images/img${item.productId}.png`} alt={item.title} className="thumb"/>
                             </Form.Label>
-                            <Form.Label as={Col} md={5}>
+                            <Form.Label as={Col} xs={8} md={8} lg={4} className="mb-2">
                                 {item.description===null?' - ': item.description}
                             </Form.Label>
-                            <Form.Label as={Col} md={2}>
+                            <Form.Label as={Col} xs={2} sm={3} md={{ span: 3, offset: 2 }} lg={{ span: 3, offset: 0 }} className="mb-2">
                                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
                                     item.price===null?' - ': (item.price * item.qty).toFixed(2)
                                 )}
                             </Form.Label>
-                            <InputGroup as={Col} md={2}>
+                            <InputGroup as={Col} xs={{ span: 6, offset: 2 }} md={{ span: 3, offset: 0 }} lg={2}>
                                 <InputGroup.Prepend>
                                     <Button variant="light" onClick={e => decrement(item)}><Dash /></Button>
                                 </InputGroup.Prepend>
@@ -160,7 +160,7 @@ export default function CartDetails({ show, close }) {
                                 <InputGroup.Append>
                                     <Button variant="light" onClick={e => increment(item)} title="Adicionar mais"><Plus /></Button>
                                 </InputGroup.Append>
-                                <Col md={1}></Col>
+                                <Col xs={5} md={1} lg={0}></Col>
                             </InputGroup>
                                 <Button variant="light" onClick={e => remove(item)} title="Remover item"><Trash /></Button>
                         </Form.Group>
@@ -168,10 +168,10 @@ export default function CartDetails({ show, close }) {
                     </Form>
                 ))}
                 <Row>
-                    <Col md={{ span: 2, offset: 7 }}>
-                        R$ {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPrice.toFixed(2))}
+                    <Col xs={4} md={{ span: 3, offset: 2 }} lg={{ span: 2, offset: 6 }} className="mb-2">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPrice.toFixed(2))}
                     </Col>
-                    <Col md={3}>
+                    <Col xs={6} md={{ span: 3, offset: 4 }} lg={{ span: 3, offset: 1 }}>
                         <Button variant="success" onClick={finalizar} >
                             Finalizar Compra
                         </Button>

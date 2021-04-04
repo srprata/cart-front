@@ -4,9 +4,10 @@
 .topo {
     background-color:rgb(216, 226, 226);
 }
-.div a {
-    text-decoration: none;
-}
 .link {
+    color: black;
+}
+#root a, a:hover {
+    text-decoration: none;
     color: black;
 }

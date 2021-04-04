@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
-import ErrorAlert from './AlertMsg';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import AlertMsg from './AlertMsg';
 //Redux
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../actions/cartAction';
@@ -10,6 +10,7 @@ export default function ProductDetails({ show, close, product }) {
 
     const[showAlert, setShowAlert] = useState(false);
     const[msg, setMsg] = useState();
+    const[showProductOnCart, setShowProductOnCart] = useState(false);
     
     const cart = useSelector(state => state);
 
@@ -20,16 +21,19 @@ export default function ProductDetails({ show, close, product }) {
 
         let items = addToCart(cart, product);
 
-        if(!items){
-            setMsg(`Infelizmente não temos mais estoque para ${product.title}`);
-             setShowAlert(true);
+        if(items === true){
+            setMsg(`Infelizmente não temos mais estoque para ${product.title}. Estoque atual é de ${product.stock}`);
+            setShowAlert(true);
         }else{
             dispatch({
                 type:actionsTypes.ADD_TO_CART,
                 data: { items }
-            })
+            });
+            setShowProductOnCart(true);
+            setTimeout(() => (setShowProductOnCart(false)), 1500);
         }
     }
+
 
     return (
         <React.Fragment>
@@ -38,7 +42,7 @@ export default function ProductDetails({ show, close, product }) {
                     <Modal.Title>{product.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ErrorAlert showAlert={showAlert} setShowAlert={setShowAlert} msg={msg}></ErrorAlert>
+                    <AlertMsg showAlert={showAlert} setShowAlert={setShowAlert} msg={msg}></AlertMsg>
                     {showAlert? null: (
                         <React.Fragment>
                             <Form>
@@ -50,12 +54,18 @@ export default function ProductDetails({ show, close, product }) {
                                     <Form.Label column>
                                         <b>Valor: </b>{product.price===null?' - ': new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price.toFixed(2))}
                                     </Form.Label>
+                                    {showProductOnCart ? (
+                                        <Alert variant="success">
+                                            Produto adicionado ao carrinho
+                                        </Alert>
+                                    ): null}
                                 </Form.Group>
                             </Form>
                         </React.Fragment>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
+                    
                     <Button variant="secondary" onClick={close}>
                         Fechar
                     </Button>

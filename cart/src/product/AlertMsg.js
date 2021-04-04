@@ -9,7 +9,7 @@ export default function AlertMsg({ showAlert, setShowAlert, msg }) {
                     <Modal.Title>Aviso!</Modal.Title>
                 </Modal.Header>
                 <Modal.Body align="center">
-                <Alert show={showAlert} variant="primary">
+                <Alert show={showAlert} variant="secondary">
                     <Alert.Heading>{msg}</Alert.Heading>
                 </Alert>
                 </Modal.Body>

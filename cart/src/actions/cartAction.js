@@ -4,6 +4,7 @@ export const addToCart = (items, product) => {
     const cartItems = items.items.slice();
 
     let alreadyInCart = false;
+    let outOfStock = false;
 
     cartItems.forEach(element => {
 
@@ -13,7 +14,7 @@ export const addToCart = (items, product) => {
             alreadyInCart = true;
 
             //verify product stock
-            product.stock - element.qty + 1 > 0 ? element.qty++ : element.outOfStock = true;
+            product.stock - (element.qty + 1) >= 0 ? element.qty++ : outOfStock = true;
         }
 
     });
@@ -23,7 +24,7 @@ export const addToCart = (items, product) => {
         cartItems.push({...product, qty: 1})
     }
 
-    return cartItems;
+    return !outOfStock ? cartItems : outOfStock;
 
 }
 
@@ -81,7 +82,7 @@ export const incrementProductBy1 = (items, product) => {
 
         if(element.productId === product.productId){
             //verify product stock
-            product.stock - element.qty + 1 > 0 ? element.qty++ : error = 1;
+            product.stock - (element.qty + 1) >= 0 ? element.qty++ : error = 1;
         }
 
     });

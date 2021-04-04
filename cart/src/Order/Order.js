@@ -1,17 +1,17 @@
 import React, { useState } from 'react'
 import { Form, Button, Col, Container, Card } from 'react-bootstrap'
 //Redux
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 //Graphql
 import { useMutation } from "@apollo/client";
 import { SAVE_ORDER } from '../queries/orderQueries'
 import { onlyNumbers } from '../generic/functions';
 //Components
-import Menu from '../Menu';
+import Topo from '../Topo';
 import AlertMsg from '../product/AlertMsg';
 //Navigation
 import { useHistory, Link } from 'react-router-dom';
-import '../menu.css'
+import '../topo.css'
 
 export default function Order() {
 
@@ -19,8 +19,9 @@ export default function Order() {
     const[showAlert, setShowAlert] = useState(false);
     const[msg, setMsg] = useState();
     const history = useHistory();
+    const dispatch = useDispatch();
     const cartItems = useSelector(state => state.items);
-    
+
     //test if cart is empty, if it is redirect to home page
     if(cartItems.length === 0){
         history.push('/');
@@ -41,14 +42,14 @@ export default function Order() {
     //validate creditcard
     const validateCreditCard = () => {
         switch (creditCard) {
-            case '1111':
+            case '1111111111111111':
                 showAlertBox('Cartão inválido');
                 break;
-            case '4444':
+            case '4444444444444444':
                 saveOrder();
                 break;
             default:
-                showAlertBox('Digite 4444 para finalizar a compra')
+                showAlertBox('Digite tudo 4 para finalizar a compra')
                 break;
         }
     }
@@ -67,62 +68,62 @@ export default function Order() {
                 totalItens: totalItems
             }
         })
-            .then(response => {
-                // dispatch({
-                //     type: 'SET_MSG',
-                //     msg: 'Encaminhamento realizado com sucesso!'
-                // });
-                // history.push(`/interesse/${professor.id}`);
-                showAlertBox('Parabens! Compra realizada com sucesso!');
-            })
-            .catch(response => {
-                showAlertBox('Ocorreu um erro ao tentar realizar o pagamento! Por favor tente novamente!');
-                console.log(response)
-            })
+        .then(response => {
+            dispatch({
+                type: 'CLEAR_CART',
+            });
+            // history.push(`/interesse/${professor.id}`);
+            showAlertBox('Parabéns! Compra realizada com sucesso!');
+
+        })
+        .catch(response => {
+            showAlertBox('Ocorreu um erro ao tentar realizar o pagamento! Por favor tente novamente!');
+            console.log(response)
+        })
     }
 
     return (
 
         <React.Fragment>
 
-            <Menu info=' - Checkout' />
+            <Topo info=' - Checkout' />
             
             <Container fluid>
 
                 <AlertMsg showAlert={showAlert} setShowAlert={setShowAlert} msg={msg} />
 
                 <Form>
-                    <Form.Group className="row align-items-center">
-                        <Col md={5}>
+                    <Form.Group as={Col} className="row align-items-center">
+                        <Col xs={12} md={5} lg={3} className="mb-2">
                             <Form.Control
                                 type="text"
                                 id="qtyItens"
-                                placeholder="Digite os 4 primeiros dígitos do cartão"
+                                placeholder="Digite os 16 dígitos do cartão"
                                 value={creditCard}
                                 onChange={e => onlyNumbers(e.target.value) ? setCreditCard(e.target.value) : ''}
-                                maxLength={4}
+                                maxLength={16}
                             />
                         </Col>
-                        <Col md={1}>
+                        <Col xs={12} md={1} lg={2} className="mb-2">
                             <Button variant="success" onClick={e => validateCreditCard()}>Comprar</Button>
                         </Col>
-                        <Col md={{ span: 4, offset: 2 }}>
-                        <Card style={{ width: '18rem' }}>
-                            <Card.Body>
-                                <Card.Title>Resumo</Card.Title>
-                                <Card.Subtitle className="text-muted">
-                                    <br/>
-                                    <div className="div">
-                                        Itens: {totalItems}
-                                        <Link to='/cart' className="link"> (Visualizar Itens)</Link>
-                                    </div>
-                                    <br/>
-                                    <div>
-                                        Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPrice.toFixed(2))}
-                                    </div>
-                                </Card.Subtitle>
-                            </Card.Body>
-                        </Card>
+                        <Col xs={12} md={{ span: 4, offset: 2 }} lg={3} className="mb-2">
+                            <Card style={{ width: '18rem' }}>
+                                <Card.Body>
+                                    <Card.Title>Resumo</Card.Title>
+                                    <Card.Subtitle className="text-muted">
+                                        <br/>
+                                        <div className="div">
+                                            Itens: {totalItems}
+                                            <Link to='/cart' className="link"> (Visualizar Itens)</Link>
+                                        </div>
+                                        <br/>
+                                        <div>
+                                            Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPrice.toFixed(2))}
+                                        </div>
+                                    </Card.Subtitle>
+                                </Card.Body>
+                            </Card>
                         </Col>
                     </Form.Group>
                 </Form>
