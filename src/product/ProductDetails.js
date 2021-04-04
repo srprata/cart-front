@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
-import AlertMsg from './AlertMsg';
+import AlertMsg from '../generic/AlertMsg';
 //Redux
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../actions/cartAction';

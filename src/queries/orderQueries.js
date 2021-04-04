@@ -12,3 +12,16 @@ export const SAVE_ORDER = gql`
           }
     }
 `
+export const GET_ORDERS = gql`
+    query {
+        getOrders{
+            id,
+            totalItens,
+            totalPrice
+            products{
+              title
+              qty
+            }
+        }
+    }
+`

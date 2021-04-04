@@ -8,7 +8,7 @@ import { SAVE_ORDER } from '../queries/orderQueries'
 import { onlyNumbers } from '../generic/functions';
 //Components
 import Topo from '../Topo';
-import AlertMsg from '../product/AlertMsg';
+import AlertMsg from '../generic/AlertMsg';
 //Navigation
 import { useHistory, Link } from 'react-router-dom';
 import '../topo.css'
@@ -71,9 +71,10 @@ export default function Order() {
         .then(response => {
             dispatch({
                 type: 'CLEAR_CART',
+                msg: 'Compra efetuada com sucesso'
             });
-            // history.push(`/interesse/${professor.id}`);
-            showAlertBox('Parabéns! Compra realizada com sucesso!');
+            history.push(`/ordersList`);
+            // showAlertBox('Parabéns! Compra realizada com sucesso!');
 
         })
         .catch(response => {
@@ -105,7 +106,7 @@ export default function Order() {
                             />
                         </Col>
                         <Col xs={12} md={1} lg={2} className="mb-2">
-                            <Button variant="success" onClick={e => validateCreditCard()}>Comprar</Button>
+                            <Button variant="success" onClick={e => validateCreditCard()}>Concluir Compra</Button>
                         </Col>
                         <Col xs={12} md={{ span: 4, offset: 2 }} lg={3} className="mb-2">
                             <Card style={{ width: '18rem' }}>

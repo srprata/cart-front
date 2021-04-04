@@ -10,8 +10,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
+  //dev
+  const url = 'http://localhost:8080/graphql';
+  //heroku
+  //const url = `https://app-cart-service.herokuapp.com/graphql`
+
   const client = new ApolloClient({
-    uri: 'http://localhost:8080/graphql',
+    uri: url,
     cache: new InMemoryCache()
   })
 

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom';
 //Components
 import Topo from '../Topo';
-import AlertMsg from '../product/AlertMsg';
+import AlertMsg from '../generic/AlertMsg';
 import { changeProductQty, incrementProductBy1, decrementProductBy1, removeFromCart } from '../actions/cartAction';
 //Generic
 import { onlyNumbers } from '../generic/functions';
