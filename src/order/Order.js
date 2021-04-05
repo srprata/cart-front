@@ -33,9 +33,11 @@ export default function Order() {
     cartItems.forEach(element => {
         //problem with mutation __typename
         delete element.__typename;
-        totalItems += element.qty;
+        totalItems += parseInt(element.qty);
         totalPrice += element.qty * element.price;
     });
+
+    console.log(totalItems)
 
     const [save_order] = useMutation(SAVE_ORDER);
 
