@@ -21,7 +21,7 @@ export default function Menu({ info = null }) {
 
     //sum total items / price
     cartItems.forEach(element => {
-        totalItens += element.qty;
+        totalItens += parseInt(element.qty);
         totalPrice += element.qty * element.price;
     });
 
