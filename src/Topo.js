@@ -11,14 +11,12 @@ import { Cart4 } from 'react-bootstrap-icons';
 
 export default function Menu({ info = null }) {
 
-    const state = useSelector(state => state);
+    const cartItems = useSelector(state => state.items.slice());
     const history = useHistory();
 
     let totalItens = 0;
     let totalPrice = 0;
     
-    const cartItems = state.items.slice();
-
     //sum total items / price
     cartItems.forEach(element => {
         totalItens += parseInt(element.qty);
