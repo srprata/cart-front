@@ -1,7 +1,7 @@
 //add or increment product on cart
-export const addToCart = (items, product) => {
+const addToCart = (items, product) => {
 
-    const cartItems = items.items.slice();
+    const cartItems = items.slice();
 
     let alreadyInCart = false;
     let outOfStock = false;
@@ -29,7 +29,7 @@ export const addToCart = (items, product) => {
 }
 
 // remove product from cart
-export const removeFromCart = (items, product) => {
+const removeFromCart = (items, product) => {
 
     const cartItems = items.slice().filter(
         element => element.productId !== product.productId
@@ -40,7 +40,7 @@ export const removeFromCart = (items, product) => {
 }
 
 // edit qty of products
-export const changeProductQty = (items, product, qty) => {
+const changeProductQty = (items, product, qty) => {
 
     const cartItems = items.slice();
     
@@ -56,7 +56,7 @@ export const changeProductQty = (items, product, qty) => {
             }
 
             //qty is bigger than 1
-            if(qty < 0){
+            if(qty <= 0){
                 error = 2
             }
 
@@ -73,7 +73,7 @@ export const changeProductQty = (items, product, qty) => {
 }
 
 //increment products by 1
-export const incrementProductBy1 = (items, product) => {
+const incrementProductBy1 = (items, product) => {
 
     const cartItems = items.slice();
     let error = 0;
@@ -92,7 +92,7 @@ export const incrementProductBy1 = (items, product) => {
 }
 
 //decrement products by 1
-export const decrementProductBy1 = (items, product) => {
+const decrementProductBy1 = (items, product) => {
 
     const cartItems = items.slice();
     let error = 0;
@@ -109,3 +109,5 @@ export const decrementProductBy1 = (items, product) => {
     return error ? error : cartItems;
 
 }
+
+module.exports = { addToCart, removeFromCart, changeProductQty, incrementProductBy1, decrementProductBy1 }
