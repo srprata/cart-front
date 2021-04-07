@@ -12,7 +12,7 @@ export default function ProductDetails({ show, close, product }) {
     const[msg, setMsg] = useState();
     const[showProductOnCart, setShowProductOnCart] = useState(false);
     
-    const cart = useSelector(state => state);
+    const cart = useSelector(state => state.items);
 
     const dispatch = useDispatch();
 
